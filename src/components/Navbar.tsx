@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,9 +15,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { BookOpen, LogOut, User, Wallet, Menu, X, LayoutDashboard } from "lucide-react";
 
 const Navbar = () => {
-  const { user, isAdmin, logout, isAuthenticated } = useAuth();
+  const { user, isAdmin, logout, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure component is mounted to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -37,6 +43,9 @@ const Navbar = () => {
     if (!name) return "U";
     return name.charAt(0).toUpperCase();
   };
+
+  // Don't render authenticated content until we've checked auth status
+  if (!mounted) return null;
 
   return (
     <nav className="bg-secondary/80 backdrop-blur-lg sticky top-0 z-50 border-b border-border">
@@ -66,7 +75,7 @@ const Navbar = () => {
               </Link>
             ))}
 
-            {isAuthenticated ? (
+            {!isLoading && (isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -119,12 +128,12 @@ const Navbar = () => {
                   <Link to="/register">Registrar</Link>
                 </Button>
               </div>
-            )}
+            ))}
           </div>
 
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
-            {isAuthenticated && (
+            {!isLoading && isAuthenticated && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full mr-2">
@@ -197,7 +206,7 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            {!isAuthenticated && (
+            {!isLoading && !isAuthenticated && (
               <div className="flex flex-col space-y-2 pt-2">
                 <Button asChild variant="secondary">
                   <Link to="/login" onClick={() => setMobileMenuOpen(false)}>

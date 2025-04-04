@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -44,10 +43,12 @@ const Login = () => {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
-      await login(values.username, values.password);
-      navigate("/");
-    } catch (error) {
-      console.error("Login failed:", error);
+      const success = await login(values.username, values.password);
+      if (success) {
+        setTimeout(() => {
+          navigate("/");
+        }, 500);
+      }
     } finally {
       setIsLoading(false);
     }

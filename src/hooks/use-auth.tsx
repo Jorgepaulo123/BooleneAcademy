@@ -68,6 +68,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Login bem-sucedido",
         description: "Bem-vindo de volta!",
       });
+      return true; // Indicate successful login
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast({
+        title: "Falha no login",
+        description: "Credenciais inválidas ou servidor indisponível",
+        variant: "destructive",
+      });
+      return false; // Indicate failed login
     } finally {
       setIsLoading(false);
     }
