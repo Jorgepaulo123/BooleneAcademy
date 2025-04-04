@@ -42,7 +42,7 @@ export const isAuthenticated = () => {
 
 const handleApiError = (error: any) => {
   console.error("API Error:", error);
-  const message = error.response?.data?.detail || "Ocorreu um erro na requisição";
+  const message = error.response?.data?.detail || error.detail || "Ocorreu um erro na requisição";
   toast({
     title: "Erro",
     description: message,
@@ -54,12 +54,19 @@ const handleApiError = (error: any) => {
 // Auth API
 export const login = async (username: string, password: string) => {
   try {
-    const formData = new FormData();
+    const formData = new URLSearchParams();
     formData.append("username", username);
     formData.append("password", password);
+    formData.append("grant_type", "password");
+    formData.append("scope", "");
+    formData.append("client_id", "string");
+    formData.append("client_secret", "string");
 
-    const response = await fetch(`${API_URL}/token`, {
+    const response = await fetch(`${API_URL}/auth/token`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       body: formData,
     });
 
@@ -78,7 +85,7 @@ export const login = async (username: string, password: string) => {
 
 export const register = async (username: string, password: string, email: string) => {
   try {
-    const response = await fetch(`${API_URL}/register`, {
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
