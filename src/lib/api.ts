@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 const API_URL = "https://boolen-849852190788.us-central1.run.app";
@@ -115,7 +114,7 @@ export const logout = () => {
 // User API
 export const getUserProfile = async () => {
   try {
-    const response = await fetch(`${API_URL}/profile`, {
+    const response = await fetch(`${API_URL}/user/profile`, {
       headers: getAuthHeaders(),
     });
 
