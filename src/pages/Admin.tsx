@@ -62,8 +62,8 @@ const Admin = () => {
       if (!admin) {
         navigate("/");
         toast({
-          title: "Acesso negado",
-          description: "Você não tem permissão para acessar esta página",
+          title: "Access denied",
+          description: "You don't have permission to access this page",
           variant: "destructive",
         });
         return;
@@ -76,7 +76,7 @@ const Admin = () => {
   }, [isAuthenticated, navigate, toast]);
 
   const handleDeleteUser = async (userId: number, username: string) => {
-    if (!confirm(`Tem certeza que deseja excluir o usuário ${username}?`)) {
+    if (!confirm(`Are you sure you want to delete user ${username}?`)) {
       return;
     }
 
@@ -84,8 +84,8 @@ const Admin = () => {
     try {
       await deleteUser(userId);
       toast({
-        title: "Usuário excluído",
-        description: "O usuário foi excluído com sucesso",
+        title: "User deleted",
+        description: "The user has been successfully deleted",
       });
       loadUsers();
     } catch (error) {
@@ -96,7 +96,7 @@ const Admin = () => {
   };
 
   const handlePromoteUser = async (userId: number, username: string) => {
-    if (!confirm(`Tem certeza que deseja promover ${username} a administrador?`)) {
+    if (!confirm(`Are you sure you want to promote ${username} to administrator?`)) {
       return;
     }
 
@@ -104,8 +104,8 @@ const Admin = () => {
     try {
       await promoteUserToAdmin(userId);
       toast({
-        title: "Usuário promovido",
-        description: "O usuário foi promovido a administrador",
+        title: "User promoted",
+        description: "The user has been promoted to administrator",
       });
       loadUsers();
     } catch (error) {
@@ -118,8 +118,8 @@ const Admin = () => {
   const handleCourseCreated = () => {
     setDialogOpen(false);
     toast({
-      title: "Curso criado",
-      description: "O curso foi criado com sucesso",
+      title: "Course created",
+      description: "The course has been successfully created",
     });
   };
 
@@ -137,11 +137,11 @@ const Admin = () => {
         <TabsList className="mb-8">
           <TabsTrigger value="courses" className="flex items-center gap-2">
             <LayoutDashboard className="h-4 w-4" />
-            Cursos
+            Courses
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Usuários
+            Users
           </TabsTrigger>
         </TabsList>
 
@@ -150,14 +150,14 @@ const Admin = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Gerenciar Cursos</CardTitle>
+                  <CardTitle>Manage Courses</CardTitle>
                   <CardDescription>
-                    Crie e gerencie os cursos da plataforma
+                    Create and manage platform courses
                   </CardDescription>
                 </div>
                 <Button onClick={() => setDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Criar novo curso
+                  Create new course
                 </Button>
               </div>
             </CardHeader>
@@ -167,16 +167,16 @@ const Admin = () => {
         <TabsContent value="users">
           <Card>
             <CardHeader>
-              <CardTitle>Gerenciar Usuários</CardTitle>
+              <CardTitle>Manage Users</CardTitle>
               <CardDescription>
-                Visualize e gerencie os usuários da plataforma
+                View and manage platform users
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {users.length === 0 ? (
                   <div className="text-center py-4 text-muted-foreground">
-                    Nenhum usuário encontrado
+                    No users found
                   </div>
                 ) : (
                   users.map((user) => (
@@ -190,7 +190,7 @@ const Admin = () => {
                           {user.email}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Criado em: {new Date(user.created_at).toLocaleDateString()}
+                          Created at: {new Date(user.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">

@@ -42,20 +42,20 @@ const Index = () => {
               </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold animate-fade-in opacity-0">
-              Curso<span className="text-primary">Galaxy</span>
+              Boolene<span className="text-primary">Academy</span>
             </h1>
             <p className="mt-4 text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up opacity-0">
-              Sua plataforma para aprendizado rápido e prático. Adquira habilidades em demanda com nossos cursos curtos e focados.
+              Your platform for fast and practical learning. Acquire in-demand skills with our focused short courses.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4 animate-fade-in opacity-0" style={{ animationDelay: "0.3s" }}>
               <Button size="lg" asChild>
-                <a href="#courses">Explorar Cursos</a>
+                <a href="#courses">Explore Courses</a>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 {isAuthenticated ? (
-                  <a href="/wallet">Adicionar Fundos</a>
+                  <a href="/wallet">Add Funds</a>
                 ) : (
-                  <a href="/register">Criar Conta</a>
+                  <a href="/register">Create Account</a>
                 )}
               </Button>
             </div>
@@ -72,21 +72,21 @@ const Index = () => {
                 <BookOpen className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-2xl font-bold">100+</h3>
-              <p className="text-muted-foreground text-center">Cursos Disponíveis</p>
+              <p className="text-muted-foreground text-center">Available Courses</p>
             </div>
             <div className="flex flex-col items-center p-6 rounded-lg bg-muted backdrop-blur-sm animate-slide-up opacity-0 stagger-item">
               <div className="bg-primary/20 p-3 rounded-full mb-4">
                 <Users className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-2xl font-bold">10,000+</h3>
-              <p className="text-muted-foreground text-center">Alunos Ativos</p>
+              <p className="text-muted-foreground text-center">Active Students</p>
             </div>
             <div className="flex flex-col items-center p-6 rounded-lg bg-muted backdrop-blur-sm animate-slide-up opacity-0 stagger-item">
               <div className="bg-primary/20 p-3 rounded-full mb-4">
                 <Star className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-2xl font-bold">4.8</h3>
-              <p className="text-muted-foreground text-center">Avaliação Média</p>
+              <p className="text-muted-foreground text-center">Average Rating</p>
             </div>
           </div>
         </div>
@@ -96,9 +96,9 @@ const Index = () => {
       <section id="courses" className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Cursos em Destaque</h2>
+            <h2 className="text-3xl font-bold">Featured Courses</h2>
             <p className="text-muted-foreground mt-2">
-              Explore nossa seleção de cursos curtos e objetivos
+              Explore our selection of short and focused courses
             </p>
           </div>
 
@@ -133,21 +133,21 @@ const Index = () => {
             <div className="md:flex md:items-center md:justify-between">
               <div className="mb-6 md:mb-0 md:w-2/3">
                 <h2 className="text-2xl md:text-3xl font-bold">
-                  Pronto para aumentar suas habilidades?
+                  Ready to enhance your skills?
                 </h2>
                 <p className="mt-3 text-muted-foreground">
-                  Junte-se a milhares de estudantes e profissionais que estão ampliando seus conhecimentos com nossos cursos.
+                  Join thousands of students and professionals who are expanding their knowledge with our courses.
                 </p>
               </div>
               <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-3">
                 <Button size="lg" asChild>
                   <a href={isAuthenticated ? "#courses" : "/register"}>
-                    {isAuthenticated ? "Ver cursos" : "Criar uma conta"}
+                    {isAuthenticated ? "View courses" : "Create account"}
                   </a>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
                   <a href={isAuthenticated ? "/wallet" : "/login"}>
-                    {isAuthenticated ? "Adicionar fundos" : "Fazer login"}
+                    {isAuthenticated ? "Add funds" : "Login"}
                   </a>
                 </Button>
               </div>
