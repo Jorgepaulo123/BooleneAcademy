@@ -95,7 +95,7 @@ const Register = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-card border border-border py-8 px-4 shadow sm:rounded-lg sm:px-10 animate-slide-up opacity-0">
+        <div className="bg-card border border-border py-8 px-4 shadow sm:rounded-lg sm:px-10 animate-slide-up">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField

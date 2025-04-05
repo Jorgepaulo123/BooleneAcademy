@@ -1,6 +1,5 @@
-
 import { createContext, useContext, useEffect, useState } from "react";
-import { getUserProfile, isAuthenticated, login, logout, register } from "@/lib/api";
+import { getUserProfile, isAuthenticated, login, logout, register, isUserAdmin, setAuthTokens } from "@/lib/api";
 import { User } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -9,7 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<boolean>;
   register: (username: string, password: string, email: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -20,7 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   isAdmin: false,
   isAuthenticated: false,
-  login: async () => {},
+  login: async () => false,
   register: async () => {},
   logout: () => {},
   refreshUser: async () => {},
@@ -32,14 +31,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   const refreshUser = async () => {
-    if (!isAuthenticated()) {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      if (!isAuthenticated()) {
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
+
       const userData = await getUserProfile();
+      if (!userData) {
+        throw new Error("Não foi possível obter dados do usuário");
+      }
       setUser(userData);
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
@@ -62,21 +64,47 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const handleLogin = async (username: string, password: string) => {
     setIsLoading(true);
     try {
-      await login(username, password);
-      await refreshUser();
+      const loginData = await login(username, password);
+      
+      if (!loginData || !loginData.access_token) {
+        throw new Error("Falha na autenticação");
+      }
+      
+      // Garantir que tokens sejam salvos
+      setAuthTokens(loginData);
+      
+      // Agora buscar os dados do usuário
+      const userData = await getUserProfile();
+      if (!userData) {
+        throw new Error("Não foi possível obter dados do usuário");
+      }
+      
+      setUser(userData);
+      
+      // Log para depuração
+      console.log("Login bem-sucedido:", { 
+        user: userData.username,
+        isAdmin: userData.is_admin,
+        token: loginData.access_token.substring(0, 10) + "..."
+      });
+      
       toast({
         title: "Login bem-sucedido",
         description: "Bem-vindo de volta!",
       });
-      return true; // Indicate successful login
+      
+      return true;
     } catch (error) {
       console.error("Login failed:", error);
+      setUser(null);
+      setAuthTokens(null); // Garantir que tokens sejam limpos em caso de erro
+      
       toast({
         title: "Falha no login",
         description: "Credenciais inválidas ou servidor indisponível",
         variant: "destructive",
       });
-      return false; // Indicate failed login
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -104,13 +132,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  // Verificar se o token existe no localStorage
+  const checkTokenExists = () => {
+    const tokens = localStorage.getItem("auth_tokens");
+    return !!tokens && tokens !== "undefined" && tokens !== "null";
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
         isLoading,
-        isAdmin: !!user?.is_admin,
-        isAuthenticated: !!user,
+        isAdmin: isUserAdmin(),
+        isAuthenticated: checkTokenExists(),
         login: handleLogin,
         register: handleRegister,
         logout: handleLogout,

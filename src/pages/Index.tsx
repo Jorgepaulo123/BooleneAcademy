@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Loader2, BookOpen, Star, Award, Users } from "lucide-react";
 import CourseCard from "@/components/CourseCard";
-import { getPublicCourses, getCourses } from "@/lib/api";
+import { getCourses } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
 import { Course } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,8 @@ const Index = () => {
   const loadCourses = async () => {
     setIsLoading(true);
     try {
-      const data = isAuthenticated ? await getCourses() : await getPublicCourses();
+      // Usar getCourses que agora já verifica internamente se o usuário está autenticado
+      const data = await getCourses();
       setCourses(data || []);
     } catch (error) {
       console.error("Failed to load courses:", error);

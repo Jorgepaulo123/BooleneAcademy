@@ -9,14 +9,25 @@ type AuthTokens = {
 
 let authTokens: AuthTokens | null = null;
 
-// Load tokens from localStorage on init
-try {
-  const storedTokens = localStorage.getItem("auth_tokens");
-  if (storedTokens) {
-    authTokens = JSON.parse(storedTokens);
+// Função para carregar tokens do localStorage
+const loadTokensFromStorage = () => {
+  try {
+    const storedTokens = localStorage.getItem("auth_tokens");
+    if (storedTokens && storedTokens !== "undefined" && storedTokens !== "null") {
+      authTokens = JSON.parse(storedTokens);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Failed to load auth tokens:", error);
+    localStorage.removeItem("auth_tokens");
+    return false;
   }
-} catch (error) {
-  console.error("Failed to load auth tokens:", error);
+};
+
+// Carrega tokens imediatamente se estamos no navegador
+if (typeof window !== 'undefined') {
+  loadTokensFromStorage();
 }
 
 export const setAuthTokens = (tokens: AuthTokens | null) => {
@@ -29,30 +40,108 @@ export const setAuthTokens = (tokens: AuthTokens | null) => {
 };
 
 export const getAuthHeaders = () => {
-  if (!authTokens) return {};
+  // Always reload tokens from storage to ensure we have the latest
+  if (typeof window !== 'undefined') {
+    loadTokensFromStorage();
+  }
+  
+  if (!authTokens?.access_token) {
+    console.log("Tokens de autenticação não encontrados");
+    // Limpar os tokens inválidos
+    localStorage.removeItem("auth_tokens");
+    return {};
+  }
+  
   return {
     Authorization: `${authTokens.token_type} ${authTokens.access_token}`,
+    'Content-Type': 'application/json'
   };
 };
 
 export const isAuthenticated = () => {
-  return !!authTokens;
+  // Recarregar tokens do localStorage para garantir que estamos usando o valor mais recente
+  if (typeof window !== 'undefined') {
+    if (!loadTokensFromStorage()) {
+      return false;
+    }
+  }
+  
+  // Verificar se authTokens existe e é válido
+  if (!authTokens || !authTokens.access_token) {
+    return false;
+  }
+  
+  // Verificar se o token não está expirado
+  try {
+    const payload = JSON.parse(atob(authTokens.access_token.split('.')[1]));
+    const expirationTime = payload.exp * 1000; // convert to milliseconds
+    
+    if (Date.now() >= expirationTime) {
+      // Token expirado, limpar
+      localStorage.removeItem("auth_tokens");
+      authTokens = null;
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Failed to validate token:", error);
+    localStorage.removeItem("auth_tokens");
+    authTokens = null;
+    return false;
+  }
 };
+
+// Garantir que os tokens sejam carregados no início
+if (typeof window !== 'undefined') {
+  loadTokensFromStorage();
+}
 
 const handleApiError = (error: any) => {
   console.error("API Error:", error);
-  const message = error.response?.data?.detail || error.detail || "Ocorreu um erro na requisição";
+  
+  // Verificar se é um erro de autenticação (401)
+  if (error.status === 401 || error.response?.status === 401) {
+    // Limpar tokens e informar que a sessão expirou
+    setAuthTokens(null);
+    toast({
+      title: "Sessão expirada",
+      description: "Por favor faça login novamente",
+      variant: "destructive",
+    });
+    // Redirecionar para a página de login após um pequeno atraso
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1000);
+    throw new Error("Sessão expirada. Por favor faça login novamente.");
+  }
+  
+  // Extrair mensagem de erro da resposta
+  let message = "Ocorreu um erro na requisição";
+  
+  if (error.response?.data?.detail) {
+    message = error.response.data.detail;
+  } else if (error.detail) {
+    message = error.detail;
+  } else if (error.message) {
+    message = error.message;
+  }
+  
   toast({
     title: "Erro",
     description: message,
     variant: "destructive",
   });
-  throw error;
+  
+  // Criar um novo objeto Error com a mensagem para ser capturado pelo catch
+  throw new Error(message);
 };
 
 // Auth API
 export const login = async (username: string, password: string) => {
   try {
+    console.log("Iniciando login para usuário:", username);
+    
     const formData = new URLSearchParams();
     formData.append("username", username);
     formData.append("password", password);
@@ -75,9 +164,15 @@ export const login = async (username: string, password: string) => {
     }
 
     const data = await response.json();
-    setAuthTokens(data);
+    console.log("Login bem-sucedido, token recebido");
+    
+    // Salvar o token no localStorage
+    localStorage.setItem("auth_tokens", JSON.stringify(data));
+    authTokens = data;
+    
     return data;
   } catch (error) {
+    console.error("Erro durante login:", error);
     handleApiError(error);
   }
 };
@@ -114,7 +209,7 @@ export const logout = () => {
 // User API
 export const getUserProfile = async () => {
   try {
-    const response = await fetch(`${API_URL}/user/profile`, {
+    const response = await fetch(`${API_URL}/users/profile`, {
       headers: getAuthHeaders(),
     });
 
@@ -152,25 +247,17 @@ export const updateProfilePicture = async (file: File) => {
 };
 
 // Course API
-export const getPublicCourses = async () => {
-  try {
-    const response = await fetch(`${API_URL}/courses/public`);
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw error;
-    }
-
-    return await response.json();
-  } catch (error) {
-    handleApiError(error);
-  }
-};
-
 export const getCourses = async () => {
   try {
-    const response = await fetch(`${API_URL}/courses`, {
-      headers: getAuthHeaders(),
+    // If user is authenticated, send their ID to check likes
+    const userId = isAuthenticated() ? getUserIdFromToken() : undefined;
+    const queryParams = userId ? `?user_id=${userId}` : '';
+    
+    const response = await fetch(`${API_URL}/courses/${queryParams}`, {
+      method: 'GET',
+      headers: {
+        'accept': 'application/json'
+      }
     });
 
     if (!response.ok) {
@@ -180,26 +267,123 @@ export const getCourses = async () => {
 
     return await response.json();
   } catch (error) {
-    handleApiError(error);
+    console.error("Failed to fetch courses:", error);
+    return [];
   }
 };
 
-export const createCourse = async (courseData: FormData) => {
+// Helper function to extract user ID from JWT token
+const getUserIdFromToken = () => {
+  if (!authTokens?.access_token) return undefined;
   try {
-    const response = await fetch(`${API_URL}/courses`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: courseData,
-    });
+    const payload = JSON.parse(atob(authTokens.access_token.split('.')[1]));
+    return payload.user_id;
+  } catch (error) {
+    console.error("Failed to decode token:", error);
+    return undefined;
+  }
+};
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw error;
+// Helper function to check if user is admin from JWT token
+export const isUserAdmin = () => {
+  if (!authTokens?.access_token) return false;
+  try {
+    const payload = JSON.parse(atob(authTokens.access_token.split('.')[1]));
+    return payload.is_admin === true;
+  } catch (error) {
+    console.error("Failed to decode token:", error);
+    return false;
+  }
+};
+
+export const createCourse = async (
+  title: string,
+  description: string,
+  price: number,
+  duration_minutes: number,
+  cover_image: File,
+  course_file: File
+) => {
+  try {
+    // Recarregar tokens para garantir que temos os mais recentes
+    if (typeof window !== 'undefined') {
+      loadTokensFromStorage();
+    }
+    
+    // Validar dados antes de enviar
+    if (!title || !description || !price || !duration_minutes || !cover_image || !course_file) {
+      throw new Error("Todos os campos são obrigatórios");
     }
 
-    return await response.json();
+    // Verificar autenticação explicitamente
+    if (!authTokens?.access_token) {
+      console.error("Token de autenticação não encontrado");
+      throw new Error("Não autenticado. Faça login novamente.");
+    }
+
+    // Criar FormData
+    const formData = new FormData();
+    
+    // Adicionar dados de texto
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('price', price.toString());
+    formData.append('duration_minutes', duration_minutes.toString());
+    
+    // Adicionar arquivos
+    formData.append('cover_image', cover_image);
+    formData.append('course_file', course_file);
+
+    // Usar os cabeçalhos de autenticação
+    const tokenType = authTokens.token_type || 'Bearer';
+    const accessToken = authTokens.access_token;
+    
+    console.log("Token de autenticação:", tokenType, accessToken.substring(0, 10) + "...");
+
+    // Fazer upload usando o token de autenticação
+    const response = await fetch(`${API_URL}/courses`, {
+      method: "POST",
+      headers: {
+        'Authorization': `${tokenType} ${accessToken}`
+      },
+      body: formData
+    });
+
+    console.log("Status da resposta:", response.status, response.statusText);
+
+    // Processar resposta
+    if (!response.ok) {
+      let errorMessage = "Falha ao criar o curso";
+      
+      if (response.status === 401) {
+        // Se for 401, forçar logout
+        setAuthTokens(null);
+        errorMessage = "Sessão expirada. Faça login novamente.";
+      } else {
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          // Ignorar erro ao analisar JSON
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    // Retornar resultado
+    let result;
+    try {
+      result = await response.json();
+    } catch (e) {
+      // Se não puder analisar JSON, retornar objeto simples
+      result = { success: true };
+    }
+    
+    return result;
   } catch (error) {
-    handleApiError(error);
+    console.error("Erro ao criar curso:", error);
+    throw error instanceof Error ? error : new Error("Erro desconhecido");
   }
 };
 
@@ -262,7 +446,7 @@ export const toggleCourseLike = async (courseId: number) => {
 // Wallet API
 export const getWalletBalance = async () => {
   try {
-    const response = await fetch(`${API_URL}/wallet/balance`, {
+    const response = await fetch(`${API_URL}/users/wallet/balance`, {
       headers: getAuthHeaders(),
     });
 
@@ -279,7 +463,7 @@ export const getWalletBalance = async () => {
 
 export const getWalletTransactions = async () => {
   try {
-    const response = await fetch(`${API_URL}/wallet/transactions`, {
+    const response = await fetch(`${API_URL}/users/wallet/transactions`, {
       headers: getAuthHeaders(),
     });
 
@@ -296,7 +480,7 @@ export const getWalletTransactions = async () => {
 
 export const initializeDeposit = async (amount: number, mobile: string) => {
   try {
-    const response = await fetch(`${API_URL}/wallet/deposit/initialize`, {
+    const response = await fetch(`${API_URL}/users/wallet/deposit/initialize`, {
       method: "POST",
       headers: {
         ...getAuthHeaders(),
@@ -321,7 +505,7 @@ export const initializeDeposit = async (amount: number, mobile: string) => {
 
 export const verifyDeposit = async (paymentRef: string) => {
   try {
-    const response = await fetch(`${API_URL}/wallet/verify-deposit/${paymentRef}`, {
+    const response = await fetch(`${API_URL}/users/wallet/verify-deposit/${paymentRef}`, {
       method: "POST",
       headers: getAuthHeaders(),
     });

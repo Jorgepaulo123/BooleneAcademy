@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,18 +11,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { isUserAdmin } from "@/lib/api";
 import { BookOpen, LogOut, User, Wallet, Menu, X, LayoutDashboard } from "lucide-react";
 
 const Navbar = () => {
-  const { user, isAdmin, logout, isAuthenticated, isLoading } = useAuth();
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // Ensure component is mounted to avoid hydration issues
+  // Update authentication and admin status
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (isAuthenticated) {
+      // Verifique diretamente pelo token em vez de depender do objeto do usuário
+      setIsAdmin(isUserAdmin());
+    } else {
+      setIsAdmin(false);
+    }
+  }, [isAuthenticated, user]);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -48,182 +55,128 @@ const Navbar = () => {
   if (!mounted) return null;
 
   return (
-    <nav className="bg-secondary/80 backdrop-blur-lg sticky top-0 z-50 border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <BookOpen className="h-8 w-8 text-primary mr-2 animate-pulse-slow" />
-              <span className="text-xl font-bold text-white">CursoGalaxy</span>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="container flex h-16 items-center">
+        <Link to="/" className="mr-8 flex items-center space-x-2">
+          <BookOpen className="h-6 w-6 text-primary" />
+          <span className="font-bold">Boolen</span>
+        </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex md:flex-1">
+          <ul className="flex space-x-4">
             {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive(link.path)
-                    ? "bg-primary text-white"
-                    : "text-gray-300 hover:bg-muted hover:text-white"
-                }`}
-              >
-                <link.icon className="h-4 w-4 mr-2" />
-                {link.name}
-              </Link>
+              <li key={link.path}>
+                <Button
+                  variant={isActive(link.path) ? "secondary" : "ghost"}
+                  asChild
+                >
+                  <Link to={link.path} className="flex items-center space-x-1">
+                    <link.icon className="h-4 w-4" />
+                    <span>{link.name}</span>
+                  </Link>
+                </Button>
+              </li>
             ))}
+          </ul>
+        </div>
 
-            {!isLoading && (isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar className="h-9 w-9 border border-primary">
-                      <AvatarImage
-                        src={user?.profile_picture}
-                        alt={user?.username || "User"}
-                      />
-                      <AvatarFallback className="bg-primary text-white">
-                        {getInitials(user?.username)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user?.username}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user?.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          {!isLoading && !isAuthenticated && (
+            <Button asChild variant="ghost">
+              <Link to="/login">Entrar</Link>
+            </Button>
+          )}
+
+          {!isLoading && isAuthenticated && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-9 w-9 border border-primary">
+                    <AvatarImage
+                      src={user?.profile_picture}
+                      alt={user?.username || "User"}
+                    />
+                    <AvatarFallback className="bg-primary text-white">
+                      {getInitials(user?.username)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user?.username}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Perfil</span>
+                  </Link>
+                </DropdownMenuItem>
+                {isAdmin && (
                   <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Perfil</span>
+                    <Link to="/admin" className="flex items-center cursor-pointer">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Admin</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/wallet" className="flex items-center cursor-pointer">
-                      <Wallet className="mr-2 h-4 w-4" />
-                      <span>Carteira</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Button asChild variant="secondary" size="sm">
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button asChild variant="default" size="sm">
-                  <Link to="/register">Registrar</Link>
-                </Button>
-              </div>
-            ))}
-          </div>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           {/* Mobile menu button */}
-          <div className="flex items-center md:hidden">
-            {!isLoading && isAuthenticated && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full mr-2">
-                    <Avatar className="h-9 w-9 border border-primary">
-                      <AvatarImage
-                        src={user?.profile_picture}
-                        alt={user?.username || "User"}
-                      />
-                      <AvatarFallback className="bg-primary text-white">
-                        {getInitials(user?.username)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user?.username}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user?.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Perfil</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+          <Button
+            variant="ghost"
+            className="md:hidden"
+            onClick={toggleMobileMenu}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
             )}
-            <Button
-              variant="ghost"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-muted focus:outline-none"
-              onClick={toggleMobileMenu}
-            >
-              {mobileMenuOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
-              )}
-            </Button>
-          </div>
+          </Button>
         </div>
-      </div>
 
-      {/* Mobile menu, show/hide based on menu state */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-secondary/95 backdrop-blur-sm animate-fade-in">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
-                  isActive(link.path)
-                    ? "bg-primary text-white"
-                    : "text-gray-300 hover:bg-muted hover:text-white"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <link.icon className="h-5 w-5 mr-2" />
-                {link.name}
-              </Link>
-            ))}
-            {!isLoading && !isAuthenticated && (
-              <div className="flex flex-col space-y-2 pt-2">
-                <Button asChild variant="secondary">
-                  <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                    Login
-                  </Link>
-                </Button>
-                <Button asChild variant="default">
-                  <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                    Registrar
-                  </Link>
-                </Button>
-              </div>
-            )}
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="absolute top-16 left-0 right-0 bg-background border-b md:hidden">
+            <ul className="container py-4">
+              {navLinks.map((link) => (
+                <li key={link.path}>
+                  <Button
+                    variant={isActive(link.path) ? "secondary" : "ghost"}
+                    className="w-full justify-start"
+                    asChild
+                  >
+                    <Link
+                      to={link.path}
+                      className="flex items-center space-x-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <link.icon className="h-4 w-4" />
+                      <span>{link.name}</span>
+                    </Link>
+                  </Button>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </nav>
+    </header>
   );
 };
 

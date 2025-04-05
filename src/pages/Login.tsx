@@ -20,7 +20,7 @@ const formSchema = z.object({
   username: z.string().min(3, {
     message: "Nome de usuário deve ter pelo menos 3 caracteres",
   }),
-  password: z.string().min(6, {
+  password: z.string().min(4, {
     message: "Senha deve ter pelo menos 6 caracteres",
   }),
 });
@@ -45,9 +45,10 @@ const Login = () => {
     try {
       const success = await login(values.username, values.password);
       if (success) {
-        setTimeout(() => {
-          navigate("/");
-        }, 500);
+        // Add a longer delay and check authentication state before navigating
+        await new Promise(resolve => setTimeout(resolve, 800));
+        // Redirect with refresh
+        window.location.href = "/";
       }
     } finally {
       setIsLoading(false);
@@ -87,7 +88,7 @@ const Login = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-card border border-border py-8 px-4 shadow sm:rounded-lg sm:px-10 animate-slide-up opacity-0">
+        <div className="bg-card border border-border py-8 px-4 shadow sm:rounded-lg sm:px-10 animate-slide-up">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField

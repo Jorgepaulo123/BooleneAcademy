@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getCourses, getPublicCourses, toggleCourseLike, purchaseCourse, downloadCourse } from "@/lib/api";
+import { getCourses, toggleCourseLike, purchaseCourse, downloadCourse } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,7 +23,7 @@ const CourseDetail = () => {
   const loadCourse = async () => {
     setIsLoading(true);
     try {
-      const data = isAuthenticated ? await getCourses() : await getPublicCourses();
+      const data = await getCourses();
       const foundCourse = data?.find((c: Course) => c.id === courseId);
       
       if (foundCourse) {
