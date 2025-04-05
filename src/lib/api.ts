@@ -496,7 +496,7 @@ export const getWalletTransactions = async () => {
 
 export const initializeDeposit = async (amount: number, mobile: string) => {
   try {
-    const response = await fetch(`${API_URL}/users/wallet/deposit/initialize`, {
+    const response = await fetch(`${API_URL}/wallet/deposit/initialize`, {
       method: "POST",
       headers: {
         ...getAuthHeaders(),
