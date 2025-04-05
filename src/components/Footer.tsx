@@ -17,10 +17,10 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center">
               <BookOpen className="h-8 w-8 text-primary mr-2" />
-              <span className="text-xl font-bold">CursoGalaxy</span>
+              <span className="text-xl font-bold">Boolen Academy</span>
             </div>
             <p className="text-sm text-gray-400">
-              Plataforma completa de cursos online para impulsionar sua carreira e conhecimento.
+              Complete online course platform to boost your career and knowledge.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-primary">
@@ -44,24 +44,24 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-gray-400 hover:text-primary">Cursos</Link>
+                <Link to="/" className="text-gray-400 hover:text-primary">Courses</Link>
               </li>
               <li>
                 <Link to="/login" className="text-gray-400 hover:text-primary">Login</Link>
               </li>
               <li>
-                <Link to="/register" className="text-gray-400 hover:text-primary">Registrar</Link>
+                <Link to="/register" className="text-gray-400 hover:text-primary">Register</Link>
               </li>
               <li>
-                <Link to="/wallet" className="text-gray-400 hover:text-primary">Carteira</Link>
+                <Link to="/wallet" className="text-gray-400 hover:text-primary">Wallet</Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Categorias</h3>
+            <h3 className="text-lg font-semibold mb-4">Categories</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-400 hover:text-primary">Desenvolvimento</a>
+                <a href="#" className="text-gray-400 hover:text-primary">Development</a>
               </li>
               <li>
                 <a href="#" className="text-gray-400 hover:text-primary">Design</a>
@@ -73,12 +73,12 @@ const Footer = () => {
                 <a href="#" className="text-gray-400 hover:text-primary">Business</a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-primary">Fotografia</a>
+                <a href="#" className="text-gray-400 hover:text-primary">Photography</a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contato</h3>
+            <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <ul className="space-y-2">
               <li className="flex items-center">
                 <MapPin className="h-5 w-5 text-primary mr-2" />
@@ -90,13 +90,13 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-primary mr-2" />
-                <span className="text-gray-400">contato@cursogalaxy.com</span>
+                <span className="text-gray-400">contact@coursegalaxy.com</span>
               </li>
             </ul>
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">&copy; 2025 CursoGalaxy. Todos os direitos reservados.</p>
+          <p className="text-gray-400 text-sm">&copy; 2025 CourseGalaxy. All rights reserved.</p>
           <button
             onClick={scrollToTop}
             className="mt-4 md:mt-0 flex items-center justify-center bg-muted p-2 rounded-full hover:bg-primary transition-colors"
