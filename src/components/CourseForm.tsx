@@ -19,21 +19,21 @@ import { createCourse } from "@/lib/api";
 import { isAuthenticated } from "@/lib/api";
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Título deve ter pelo menos 3 caracteres" }),
-  description: z.string().min(10, { message: "Descrição deve ter pelo menos 10 caracteres" }),
+  title: z.string().min(3, { message: "Title must be at least 3 characters" }),
+  description: z.string().min(10, { message: "Description must be at least 10 characters" }),
   price: z.string().refine(
     (val) => {
       const num = Number(val);
       return !isNaN(num) && num > 0;
     },
-    { message: "Preço deve ser maior que zero" }
+    { message: "Price must be greater than zero" }
   ),
   duration_minutes: z.string().refine(
     (val) => {
       const num = Number(val);
       return !isNaN(num) && num > 0 && Number.isInteger(num);
     },
-    { message: "Duração deve ser um número inteiro positivo" }
+    { message: "Duration must be a positive integer" }
   ),
 });
 
@@ -53,7 +53,7 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
   const [authError, setAuthError] = useState(false);
 
   useEffect(() => {
-    // Resetar estado quando o componente for montado
+    // Reset state on mount
     setIsLoading(false);
     setSubmitted(false);
     setAuthError(false);
@@ -72,29 +72,28 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
   });
 
   const onSubmit = async (values: FormValues) => {
-    // Evitar submissão duplicada
+    // Avoid duplicate submissions
     if (isLoading || submitted) {
       return;
     }
     
-    // Verificar autenticação antes de iniciar o envio
+    // Check authentication
     if (!isAuthenticated()) {
       toast({
-        title: "Sessão expirada",
-        description: "Sua sessão expirou. Por favor, faça login novamente.",
+        title: "Boolene Academy - Session Expired",
+        description: "Your session has expired. Please log in again.",
         variant: "destructive",
       });
       setAuthError(true);
       return;
     }
     
-    // Log inicial para verificar estado
-    console.log("Iniciando envio do formulário", { values, isAuthenticated: true });
+    console.log("Starting form submission", { values, isAuthenticated: true });
     
     if (!coverImage) {
       toast({
-        title: "Imagem obrigatória",
-        description: "Você deve fazer upload de uma imagem de capa",
+        title: "Boolene Academy - Image Required",
+        description: "You must upload a cover image",
         variant: "destructive",
       });
       return;
@@ -102,8 +101,8 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
 
     if (!courseFile) {
       toast({
-        title: "Arquivo obrigatório",
-        description: "Você deve fazer upload de um arquivo de curso (ZIP)",
+        title: "Boolene Academy - File Required",
+        description: "You must upload a course file (ZIP)",
         variant: "destructive",
       });
       return;
@@ -111,8 +110,8 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
 
     if (!courseFile.name.endsWith('.zip')) {
       toast({
-        title: "Formato inválido",
-        description: "O arquivo do curso deve ser um arquivo ZIP",
+        title: "Boolene Academy - Invalid File Format",
+        description: "Course file must be a ZIP file",
         variant: "destructive",
       });
       return;
@@ -120,8 +119,8 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
 
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(coverImage.type)) {
       toast({
-        title: "Formato inválido",
-        description: "A imagem de capa deve ser PNG ou JPEG",
+        title: "Boolene Academy - Invalid File Format",
+        description: "Cover image must be PNG or JPEG",
         variant: "destructive",
       });
       return;
@@ -130,7 +129,7 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
     setIsLoading(true);
     
     try {
-      console.log("Enviando dados para API");
+      console.log("Sending data to API");
       const result = await createCourse(
         values.title,
         values.description,
@@ -140,17 +139,16 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
         courseFile
       );
       
-      console.log("Resultado da API:", result);
+      console.log("API result:", result);
       
       if (!result) {
-        throw new Error("Não foi possível criar o curso. Tente novamente mais tarde.");
+        throw new Error("Failed to create the course. Please try again later.");
       }
 
       setSubmitted(true);
       setIsLoading(false);
-      console.log("Curso criado com sucesso");
+      console.log("Course created successfully");
 
-      // Chamar callback de sucesso após um pequeno delay para garantir que o componente não seja desmontado imediatamente
       setTimeout(() => {
         if (onSuccess) {
           onSuccess();
@@ -159,15 +157,14 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
     } catch (error: any) {
       console.error("Failed to create course:", error);
       
-      const errorMessage = error.message || "Falha ao criar o curso. Verifique os campos e tente novamente.";
+      const errorMessage = error.message || "Failed to create the course. Please check the fields and try again.";
       
-      // Verificar se é um erro de autenticação
-      if (errorMessage.includes("Sessão expirada") || errorMessage.includes("login novamente")) {
+      if (errorMessage.includes("Session Expired") || errorMessage.includes("log in again")) {
         setAuthError(true);
       }
       
       toast({
-        title: "Erro ao criar curso",
+        title: "Boolene Academy - Error Creating Course",
         description: errorMessage,
         variant: "destructive",
       });
@@ -180,8 +177,8 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
     if (file) {
       if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
         toast({
-          title: "Formato inválido",
-          description: "A imagem de capa deve ser PNG ou JPEG",
+          title: "Boolene Academy - Invalid File Format",
+          description: "Cover image must be PNG or JPEG",
           variant: "destructive",
         });
         return;
@@ -195,8 +192,8 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
     if (file) {
       if (!file.name.endsWith('.zip')) {
         toast({
-          title: "Formato inválido",
-          description: "O arquivo do curso deve ser um arquivo ZIP",
+          title: "Boolene Academy - Invalid File Format",
+          description: "Course file must be a ZIP file",
           variant: "destructive",
         });
         return;
@@ -205,32 +202,30 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
     }
   };
 
-  // Mostrar mensagem de erro de autenticação
   if (authError) {
     return (
       <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-800">
-        <h3 className="font-medium text-lg">Sessão expirada</h3>
-        <p>Sua sessão expirou. Por favor, faça login novamente para continuar.</p>
+        <h3 className="font-medium text-lg">Boolene Academy - Session Expired</h3>
+        <p>Your session has expired. Please log in again to continue.</p>
         <Button 
           className="mt-4" 
           variant="outline" 
           onClick={() => window.location.href = "/login"}
         >
-          Ir para página de login
+          Go to Login Page
         </Button>
       </div>
     );
   }
 
-  // Mostrar mensagem de sucesso se o formulário foi enviado com sucesso
   if (submitted) {
     return (
       <div className="p-4 bg-green-50 border border-green-200 rounded-md text-green-800">
         <div className="flex items-center gap-2 mb-2">
           <CheckCircle className="h-5 w-5 text-green-600" />
-          <h3 className="font-medium text-lg">Curso criado com sucesso!</h3>
+          <h3 className="font-medium text-lg">Boolene Academy - Course Created Successfully!</h3>
         </div>
-        <p>O curso foi enviado e está sendo processado.</p>
+        <p>The course has been submitted and is being processed.</p>
       </div>
     );
   }
@@ -243,10 +238,10 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Título do curso</FormLabel>
+              <FormLabel>Course Title</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Digite o título do curso"
+                  placeholder="Enter the course title"
                   {...field}
                   disabled={isLoading}
                 />
@@ -261,10 +256,10 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Descrição</FormLabel>
+              <FormLabel>Course Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Digite a descrição do curso"
+                  placeholder="Enter the course description"
                   {...field}
                   disabled={isLoading}
                 />
@@ -279,11 +274,11 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço (em centavos)</FormLabel>
+              <FormLabel>Price (in cents)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Digite o preço em centavos"
+                  placeholder="Enter price in cents"
                   {...field}
                   disabled={isLoading}
                 />
@@ -298,11 +293,11 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
           name="duration_minutes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Duração (em minutos)</FormLabel>
+              <FormLabel>Duration (in minutes)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Digite a duração em minutos"
+                  placeholder="Enter duration in minutes"
                   {...field}
                   disabled={isLoading}
                 />
@@ -313,7 +308,7 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
         />
 
         <FormItem>
-          <FormLabel>Imagem de capa</FormLabel>
+          <FormLabel>Cover Image</FormLabel>
           <FormControl>
             <div className="flex items-center gap-4">
               <Input
@@ -333,7 +328,7 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
         </FormItem>
 
         <FormItem>
-          <FormLabel>Arquivo do curso (ZIP)</FormLabel>
+          <FormLabel>Course File (ZIP)</FormLabel>
           <FormControl>
             <div className="flex items-center gap-4">
               <Input
@@ -360,19 +355,19 @@ export const CourseForm = ({ onSuccess, onCancel }: CourseFormProps) => {
               onClick={onCancel}
               disabled={isLoading}
             >
-              Cancelar
+              Cancel
             </Button>
           )}
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Criando curso...
+                Creating course...
               </>
             ) : (
               <>
                 <Upload className="mr-2 h-4 w-4" />
-                Criar curso
+                Create course
               </>
             )}
           </Button>
