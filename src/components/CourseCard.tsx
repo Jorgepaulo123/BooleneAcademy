@@ -31,9 +31,9 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
   };
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString("pt-BR", {
+    return price.toLocaleString("en-US", {
       style: "currency",
-      currency: "BRL",
+      currency: "MWK",
     });
   };
 
@@ -74,8 +74,8 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
     try {
       await purchaseCourse(course.id);
       toast({
-        title: "Curso adquirido!",
-        description: "Agora você pode baixar este curso",
+        title: "Course purchased!",
+        description: "You can now download this course",
       });
       if (onUpdated) onUpdated();
     } catch (error) {
@@ -111,8 +111,8 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
     } catch (error) {
       console.error("Failed to download course:", error);
       toast({
-        title: "Erro ao baixar",
-        description: "Você precisa comprar o curso primeiro",
+        title: "Download Error",
+        description: "You need to purchase the course first",
         variant: "destructive",
       });
     } finally {
@@ -172,7 +172,7 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
             {isPurchasing ? (
               <Loader2 className="h-4 w-4 mr-1 animate-spin" />
             ) : (
-              "Comprar"
+              "Buy"
             )}
           </Button>
           <Button
