@@ -30,8 +30,8 @@ const CourseDetail = () => {
         setCourse(foundCourse);
       } else {
         toast({
-          title: "Curso não encontrado",
-          description: "O curso solicitado não existe ou foi removido",
+          title: "Course not found",
+          description: "The requested course does not exist or has been removed",
           variant: "destructive",
         });
         navigate("/");
@@ -48,7 +48,7 @@ const CourseDetail = () => {
   }, [courseId, isAuthenticated]);
 
   const formatDuration = (minutes?: number) => {
-    if (!minutes) return "Duração não disponível";
+    if (!minutes) return "Duration not available";
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}m`;
@@ -56,17 +56,17 @@ const CourseDetail = () => {
 
   const formatPrice = (price?: number) => {
     if (price === undefined) return "";
-    return price.toLocaleString("pt-BR", {
+    return price.toLocaleString("en-US", {
       style: "currency",
-      currency: "BRL",
+      currency: "MWK",
     });
   };
 
   const handleLike = async () => {
     if (!isAuthenticated) {
       toast({
-        title: "Ação restrita",
-        description: "Faça login para curtir cursos",
+        title: "Restricted Action",
+        description: "Please login to like courses",
         variant: "destructive",
       });
       return;
@@ -92,8 +92,8 @@ const CourseDetail = () => {
   const handlePurchase = async () => {
     if (!isAuthenticated) {
       toast({
-        title: "Ação restrita",
-        description: "Faça login para comprar cursos",
+        title: "Restricted Action",
+        description: "Please login to purchase courses",
         variant: "destructive",
       });
       return;
@@ -105,8 +105,8 @@ const CourseDetail = () => {
     try {
       await purchaseCourse(course.id);
       toast({
-        title: "Curso adquirido!",
-        description: "Agora você pode baixar este curso",
+        title: "Course purchased!",
+        description: "You can now download this course",
       });
       
       // Reload course to update purchase status
@@ -121,8 +121,8 @@ const CourseDetail = () => {
   const handleDownload = async () => {
     if (!isAuthenticated) {
       toast({
-        title: "Ação restrita",
-        description: "Faça login para baixar cursos",
+        title: "Restricted Action",
+        description: "Please login to download courses",
         variant: "destructive",
       });
       return;
@@ -151,8 +151,8 @@ const CourseDetail = () => {
     } catch (error) {
       console.error("Failed to download course:", error);
       toast({
-        title: "Erro ao baixar",
-        description: "Você precisa comprar o curso primeiro",
+        title: "Download Error",
+        description: "You need to purchase the course first",
         variant: "destructive",
       });
     } finally {
@@ -171,11 +171,11 @@ const CourseDetail = () => {
   if (!course) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-10 text-center">
-        <h1 className="text-2xl font-bold mb-4">Curso não encontrado</h1>
+        <h1 className="text-2xl font-bold mb-4">Course not found</h1>
         <p className="text-muted-foreground mb-6">
-          O curso que você está procurando não existe ou foi removido.
+          The course you are looking for does not exist or has been removed.
         </p>
-        <Button onClick={() => navigate("/")}>Voltar para a página inicial</Button>
+        <Button onClick={() => navigate("/")}>Back to home page</Button>
       </div>
     );
   }
@@ -189,7 +189,7 @@ const CourseDetail = () => {
           onClick={() => navigate("/")}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar para cursos
+          Back to courses
         </Button>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -215,7 +215,7 @@ const CourseDetail = () => {
               <div className="flex items-center">
                 <User className="h-5 w-5 text-muted-foreground mr-1" />
                 <span className="text-muted-foreground">
-                  ID do Instrutor: {course.uploaded_by}
+                  Instructor ID: {course.uploaded_by}
                 </span>
               </div>
               <div className="flex items-center">
@@ -223,7 +223,7 @@ const CourseDetail = () => {
                   className={`h-5 w-5 mr-1 ${course.liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
                 />
                 <span className="text-muted-foreground">
-                  {course.likes_count || 0} curtidas
+                  {course.likes_count || 0} likes
                 </span>
               </div>
             </div>
@@ -249,12 +249,12 @@ const CourseDetail = () => {
                   {isPurchasing ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processando...
+                      Processing...
                     </>
                   ) : (
                     <>
                       <Wallet className="mr-2 h-4 w-4" />
-                      Comprar Curso
+                      Buy Course
                     </>
                   )}
                 </Button>
@@ -268,7 +268,7 @@ const CourseDetail = () => {
                   {isDownloading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Preparando download...
+                      Preparing download...
                     </>
                   ) : (
                     <>
@@ -291,12 +291,12 @@ const CourseDetail = () => {
                       className={`h-4 w-4 mr-1 ${course.liked ? "fill-red-500" : ""}`}
                     />
                   )}
-                  {course.liked ? "Remover curtida" : "Curtir curso"}
+                  {course.liked ? "Remove like" : "Like course"}
                 </Button>
               </div>
 
               <div className="mt-6 pt-6 border-t border-border">
-                <h3 className="font-semibold mb-2">O que você receberá:</h3>
+                <h3 className="font-semibold mb-2">What you'll receive:</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start">
                     <svg
@@ -312,7 +312,7 @@ const CourseDetail = () => {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span>Acesso vitalício ao conteúdo do curso</span>
+                    <span>Lifetime access to course content</span>
                   </li>
                   <li className="flex items-start">
                     <svg
@@ -328,7 +328,7 @@ const CourseDetail = () => {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span>Atualizado regularmente com novos conteúdos</span>
+                    <span>Regularly updated with new content</span>
                   </li>
                   <li className="flex items-start">
                     <svg
@@ -344,7 +344,7 @@ const CourseDetail = () => {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span>Conteúdo para estudo offline</span>
+                    <span>Offline study content</span>
                   </li>
                 </ul>
               </div>

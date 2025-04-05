@@ -96,7 +96,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">&copy; 2025 CourseGalaxy. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">&copy; 2025 BooleneAcademy. All rights reserved.</p>
           <button
             onClick={scrollToTop}
             className="mt-4 md:mt-0 flex items-center justify-center bg-muted p-2 rounded-full hover:bg-primary transition-colors"
