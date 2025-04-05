@@ -84,7 +84,7 @@ const Navbar = () => {
         <div className="flex flex-1 items-center justify-end space-x-4">
           {!isLoading && !isAuthenticated && (
             <Button asChild variant="ghost">
-              <Link to="/login">Entrar</Link>
+              <Link to="/login">Login</Link>
             </Button>
           )}
 
