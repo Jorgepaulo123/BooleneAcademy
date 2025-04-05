@@ -18,10 +18,10 @@ import { useAuth } from "@/hooks/use-auth";
 
 const formSchema = z.object({
   username: z.string().min(3, {
-    message: "Nome de usuário deve ter pelo menos 3 caracteres",
+    message: "Username must be at least 3 characters",
   }),
   password: z.string().min(4, {
-    message: "Senha deve ter pelo menos 6 caracteres",
+    message: "Password must be at least 6 characters",
   }),
 });
 
@@ -43,13 +43,21 @@ const Login = () => {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
+      console.log("Iniciando tentativa de login para:", values.username);
       const success = await login(values.username, values.password);
+      
       if (success) {
-        // Add a longer delay and check authentication state before navigating
-        await new Promise(resolve => setTimeout(resolve, 800));
-        // Redirect with refresh
+        console.log("Login bem-sucedido, aguardando redirecionamento...");
+        // Aguardar um momento para garantir que os tokens foram salvos
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Forçar um refresh completo da página
         window.location.href = "/";
+      } else {
+        console.log("Login falhou - success é falso");
       }
+    } catch (error) {
+      console.error("Erro durante o login:", error);
     } finally {
       setIsLoading(false);
     }
@@ -77,12 +85,12 @@ const Login = () => {
           </div>
         </div>
         <h2 className="mt-4 text-center text-3xl font-extrabold">
-          Entrar na plataforma
+          Sign in to platform
         </h2>
         <p className="mt-2 text-center text-sm text-muted-foreground">
-          Ou{" "}
+          Or{" "}
           <Link to="/register" className="text-primary hover:underline">
-            criar uma nova conta
+            create a new account
           </Link>
         </p>
       </div>
@@ -96,10 +104,10 @@ const Login = () => {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome de usuário</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Digite seu nome de usuário"
+                        placeholder="Enter your username"
                         {...field}
                         disabled={isLoading}
                         className="bg-muted"
@@ -115,11 +123,11 @@ const Login = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Digite sua senha"
+                        placeholder="Enter your password"
                         {...field}
                         disabled={isLoading}
                         className="bg-muted"
@@ -138,10 +146,10 @@ const Login = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Entrando...
+                    Signing in...
                   </>
                 ) : (
-                  "Entrar"
+                  "Sign in"
                 )}
               </Button>
             </form>

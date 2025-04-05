@@ -150,6 +150,7 @@ export const login = async (username: string, password: string) => {
     formData.append("client_id", "string");
     formData.append("client_secret", "string");
 
+    console.log("Enviando requisição para:", `${API_URL}/auth/token`);
     const response = await fetch(`${API_URL}/auth/token`, {
       method: "POST",
       headers: {
@@ -158,19 +159,34 @@ export const login = async (username: string, password: string) => {
       body: formData,
     });
 
+    console.log("Status da resposta:", response.status);
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw error;
+      const errorData = await response.json();
+      console.error("Erro na resposta:", errorData);
+      throw errorData;
     }
 
     const data = await response.json();
-    console.log("Login bem-sucedido, token recebido");
+    console.log("Login bem-sucedido, token recebido:", {
+      tokenType: data.token_type,
+      tokenLength: data.access_token?.length,
+      hasToken: !!data.access_token
+    });
+    
+    // Limpar tokens antigos antes de salvar os novos
+    localStorage.removeItem("auth_tokens");
     
     // Salvar o token no localStorage
-    localStorage.setItem("auth_tokens", JSON.stringify(data));
-    authTokens = data;
+    const tokenData = {
+      access_token: data.access_token,
+      token_type: data.token_type
+    };
     
-    return data;
+    localStorage.setItem("auth_tokens", JSON.stringify(tokenData));
+    authTokens = tokenData;
+    
+    return tokenData;
   } catch (error) {
     console.error("Erro durante login:", error);
     handleApiError(error);

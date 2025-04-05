@@ -42,10 +42,10 @@ const depositFormSchema = z.object({
       const num = Number(val);
       return !isNaN(num) && num > 0;
     },
-    { message: "Valor deve ser maior que zero" }
+    { message: "Amount must be greater than zero" }
   ),
   mobile: z.string().min(10, {
-    message: "Número de telefone inválido",
+    message: "Invalid phone number",
   }),
 });
 
@@ -101,8 +101,8 @@ const Wallet = () => {
       
       if (result) {
         toast({
-          title: "Depósito iniciado",
-          description: "O valor foi adicionado à sua carteira.",
+          title: "Deposit Initiated",
+          description: "The amount has been added to your wallet.",
         });
         setDepositDialogOpen(false);
         depositForm.reset();
@@ -115,7 +115,7 @@ const Wallet = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("pt-BR", {
+    return date.toLocaleDateString("en-US", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -125,9 +125,9 @@ const Wallet = () => {
   };
 
   const formatAmount = (amount: number) => {
-    return amount.toLocaleString("pt-BR", {
+    return amount.toLocaleString("en-US", {
       style: "currency",
-      currency: "BRL",
+      currency: "MWK",
     });
   };
 
@@ -146,9 +146,9 @@ const Wallet = () => {
   const getTransactionText = (type: string) => {
     switch (type) {
       case "deposit":
-        return "Depósito";
+        return "Deposit";
       case "purchase":
-        return "Compra de curso";
+        return "Course Purchase";
       default:
         return type;
     }
@@ -173,13 +173,13 @@ const Wallet = () => {
             <div>
               <h1 className="text-2xl font-bold">My Wallet</h1>
               <p className="text-muted-foreground">
-                Gerencie seus fundos e transações
+                Manage your funds and transactions
               </p>
             </div>
           </div>
           <Button onClick={() => loadWalletData()} variant="outline" className="hidden sm:flex">
             <RefreshCw className="h-4 w-4 mr-2" />
-            Atualizar
+            Update
           </Button>
         </div>
 
@@ -192,8 +192,8 @@ const Wallet = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <Card className="animate-slide-up opacity-0">
                 <CardHeader className="pb-4">
-                  <CardTitle>Saldo Disponível</CardTitle>
-                  <CardDescription>Seu saldo atual na plataforma</CardDescription>
+                  <CardTitle>Available Balance</CardTitle>
+                  <CardDescription>Your current balance on the platform</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold">
@@ -205,14 +205,14 @@ const Wallet = () => {
                     <DialogTrigger asChild>
                       <Button className="w-full">
                         <Plus className="h-4 w-4 mr-2" />
-                        Adicionar Fundos
+                        Add Funds
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Adicionar Fundos</DialogTitle>
+                        <DialogTitle>Add Funds</DialogTitle>
                         <DialogDescription>
-                          Informe o valor e o número de telefone para adicionar fundos à sua carteira.
+                          Enter the amount and phone number to add funds to your wallet.
                         </DialogDescription>
                       </DialogHeader>
                       <Form {...depositForm}>
@@ -222,7 +222,7 @@ const Wallet = () => {
                             name="amount"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Valor (KW)</FormLabel>
+                                <FormLabel>Amount (MWK)</FormLabel>
                                 <FormControl>
                                   <Input
                                     placeholder="0.00"
@@ -242,7 +242,7 @@ const Wallet = () => {
                             name="mobile"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Número de telefone</FormLabel>
+                                <FormLabel>Phone Number</FormLabel>
                                 <FormControl>
                                   <Input
                                     placeholder="(XX) XXXXX-XXXX"
@@ -255,7 +255,7 @@ const Wallet = () => {
                             )}
                           />
                           <Button type="submit" className="w-full">
-                            Confirmar Depósito
+                            Confirm Deposit
                           </Button>
                         </form>
                       </Form>
@@ -266,13 +266,13 @@ const Wallet = () => {
 
               <Card className="animate-slide-up opacity-0" style={{ animationDelay: "0.1s" }}>
                 <CardHeader className="pb-4">
-                  <CardTitle>Resumo da Carteira</CardTitle>
-                  <CardDescription>Estatísticas da sua atividade financeira</CardDescription>
+                  <CardTitle>Wallet Summary</CardTitle>
+                  <CardDescription>Statistics of your financial activity</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total de depósitos</span>
+                      <span className="text-muted-foreground">Total Deposits</span>
                       <span className="font-medium">
                         {formatAmount(
                           wallet.transactions
@@ -282,7 +282,7 @@ const Wallet = () => {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total de compras</span>
+                      <span className="text-muted-foreground">Total Purchases</span>
                       <span className="font-medium">
                         {formatAmount(
                           wallet.transactions
@@ -292,7 +292,7 @@ const Wallet = () => {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Número de transações</span>
+                      <span className="text-muted-foreground">Number of Transactions</span>
                       <span className="font-medium">{wallet.transactions.length}</span>
                     </div>
                   </div>
@@ -300,7 +300,7 @@ const Wallet = () => {
                 <CardFooter>
                   <Button variant="outline" className="w-full" onClick={() => loadWalletData()}>
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Atualizar Dados
+                    Update Data
                   </Button>
                 </CardFooter>
               </Card>
@@ -308,9 +308,9 @@ const Wallet = () => {
 
             <Card className="animate-slide-up opacity-0" style={{ animationDelay: "0.2s" }}>
               <CardHeader>
-                <CardTitle>Histórico de Transações</CardTitle>
+                <CardTitle>Transaction History</CardTitle>
                 <CardDescription>
-                  As transações recentes da sua carteira
+                  Recent transactions in your wallet
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -318,7 +318,7 @@ const Wallet = () => {
                   <div className="text-center py-10">
                     <WalletIcon className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
                     <p className="text-muted-foreground">
-                      Nenhuma transação encontrada
+                      No transactions found
                     </p>
                   </div>
                 ) : (

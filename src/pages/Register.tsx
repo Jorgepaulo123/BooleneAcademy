@@ -19,17 +19,17 @@ import { useAuth } from "@/hooks/use-auth";
 
 const formSchema = z.object({
   username: z.string().min(3, {
-    message: "Nome de usuário deve ter pelo menos 3 caracteres",
+    message: "Username must be at least 3 characters",
   }),
   email: z.string().email({
-    message: "Email inválido",
+    message: "Invalid email",
   }),
   password: z.string().min(6, {
-    message: "Senha deve ter pelo menos 6 caracteres",
+    message: "Password must be at least 6 characters",
   }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "As senhas não coincidem",
+  message: "Passwords do not match",
   path: ["confirmPassword"],
 });
 
@@ -84,12 +84,12 @@ const Register = () => {
           </div>
         </div>
         <h2 className="mt-4 text-center text-3xl font-extrabold">
-          Criar nova conta
+          Create new account
         </h2>
         <p className="mt-2 text-center text-sm text-muted-foreground">
-          Ou{" "}
+          Or{" "}
           <Link to="/login" className="text-primary hover:underline">
-            entrar com uma conta existente
+            sign in with an existing account
           </Link>
         </p>
       </div>
@@ -103,10 +103,10 @@ const Register = () => {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome de usuário</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Digite seu nome de usuário"
+                        placeholder="Enter your username"
                         {...field}
                         disabled={isLoading}
                         className="bg-muted"
@@ -142,11 +142,11 @@ const Register = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Digite sua senha"
+                        placeholder="Enter your password"
                         {...field}
                         disabled={isLoading}
                         className="bg-muted"
@@ -162,11 +162,11 @@ const Register = () => {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirmar senha</FormLabel>
+                    <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Confirme sua senha"
+                        placeholder="Confirm your password"
                         {...field}
                         disabled={isLoading}
                         className="bg-muted"
@@ -185,10 +185,10 @@ const Register = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Registrando...
+                    Registering...
                   </>
                 ) : (
-                  "Registrar"
+                  "Register"
                 )}
               </Button>
             </form>
