@@ -40,8 +40,8 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
   const handleLike = async () => {
     if (!isAuthenticated) {
       toast({
-        title: "Ação restrita",
-        description: "Faça login para curtir cursos",
+        title: "Restricted Action",
+        description: "Please login to like courses",
         variant: "destructive",
       });
       return;
@@ -63,8 +63,8 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
   const handlePurchase = async () => {
     if (!isAuthenticated) {
       toast({
-        title: "Ação restrita",
-        description: "Faça login para comprar cursos",
+        title: "Restricted Action",
+        description: "Please login to purchase courses",
         variant: "destructive",
       });
       return;
@@ -88,8 +88,8 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
   const handleDownload = async () => {
     if (!isAuthenticated) {
       toast({
-        title: "Ação restrita",
-        description: "Faça login para baixar cursos",
+        title: "Restricted Action",
+        description: "Please login to download courses",
         variant: "destructive",
       });
       return;

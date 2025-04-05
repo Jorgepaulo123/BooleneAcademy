@@ -43,18 +43,18 @@ const Login = () => {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
-      console.log("Iniciando tentativa de login para:", values.username);
+      console.log("Starting login attempt for:", values.username);
       const success = await login(values.username, values.password);
       
       if (success) {
-        console.log("Login bem-sucedido, aguardando redirecionamento...");
-        // Aguardar um momento para garantir que os tokens foram salvos
+        console.log("Login successful, waiting for redirect...");
+        // Wait a moment to ensure tokens are saved
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Forçar um refresh completo da página
+        // Force a complete page refresh
         window.location.href = "/";
       } else {
-        console.log("Login falhou - success é falso");
+        console.log("Login failed - success is false");
       }
     } catch (error) {
       console.error("Erro durante o login:", error);

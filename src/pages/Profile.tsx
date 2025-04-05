@@ -35,8 +35,8 @@ const Profile = () => {
     if (file) {
       if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
         toast({
-          title: "Formato inválido",
-          description: "A foto de perfil deve ser PNG ou JPEG",
+          title: "Invalid Format",
+          description: "Profile picture must be PNG or JPEG",
           variant: "destructive",
         });
         return;
@@ -48,8 +48,8 @@ const Profile = () => {
   const handleProfilePictureUpload = async () => {
     if (!profilePicture) {
       toast({
-        title: "Nenhum arquivo selecionado",
-        description: "Selecione uma imagem para fazer upload",
+        title: "No File Selected",
+        description: "Please select an image to upload",
         variant: "destructive",
       });
       return;
@@ -59,8 +59,8 @@ const Profile = () => {
     try {
       await updateProfilePicture(profilePicture);
       toast({
-        title: "Foto atualizada",
-        description: "Sua foto de perfil foi atualizada com sucesso",
+        title: "Picture Updated",
+        description: "Your profile picture has been successfully updated",
       });
       
       // Reload the user data to get the updated profile picture
@@ -81,7 +81,7 @@ const Profile = () => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString("pt-BR", {
+    return date.toLocaleDateString("en-US", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -104,9 +104,9 @@ const Profile = () => {
             <User className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Meu Perfil</h1>
+            <h1 className="text-2xl font-bold">My Profile</h1>
             <p className="text-muted-foreground">
-              Visualize e gerencie suas informações pessoais
+              View and manage your personal information
             </p>
           </div>
         </div>
@@ -114,7 +114,7 @@ const Profile = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="md:col-span-1 animate-slide-up opacity-0">
             <CardHeader className="text-center">
-              <CardTitle>Foto de Perfil</CardTitle>
+              <CardTitle>Profile Picture</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center">
               <Avatar className="h-32 w-32 border-4 border-border mb-4">
@@ -140,7 +140,7 @@ const Profile = () => {
               />
               {profilePicture && (
                 <p className="text-xs text-muted-foreground">
-                  Arquivo selecionado: {profilePicture.name}
+                  Selected file: {profilePicture.name}
                 </p>
               )}
               <Button
@@ -151,12 +151,12 @@ const Profile = () => {
                 {isUploading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Enviando...
+                    Uploading...
                   </>
                 ) : (
                   <>
                     <Upload className="mr-2 h-4 w-4" />
-                    Atualizar Foto
+                    Update Picture
                   </>
                 )}
               </Button>
@@ -165,15 +165,15 @@ const Profile = () => {
 
           <Card className="md:col-span-2 animate-slide-up opacity-0" style={{ animationDelay: "0.1s" }}>
             <CardHeader>
-              <CardTitle>Informações da Conta</CardTitle>
+              <CardTitle>Account Information</CardTitle>
               <CardDescription>
-                Detalhes da sua conta na plataforma
+                Details of your platform account
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-1">
                 <label className="text-sm font-medium text-muted-foreground">
-                  Nome de usuário
+                  Username
                 </label>
                 <div className="p-2 bg-muted rounded-md font-medium">
                   {user?.username}
@@ -189,15 +189,15 @@ const Profile = () => {
               </div>
               <div className="space-y-1">
                 <label className="text-sm font-medium text-muted-foreground">
-                  Tipo de Conta
+                  Account Type
                 </label>
                 <div className="p-2 bg-muted rounded-md font-medium">
-                  {user?.is_admin ? "Administrador" : "Usuário Regular"}
+                  {user?.is_admin ? "Administrator" : "Regular User"}
                 </div>
               </div>
               <div className="space-y-1">
                 <label className="text-sm font-medium text-muted-foreground">
-                  Data de Cadastro
+                  Registration Date
                 </label>
                 <div className="p-2 bg-muted rounded-md font-medium">
                   {formatDate(user?.created_at)}
@@ -206,7 +206,7 @@ const Profile = () => {
             </CardContent>
             <CardFooter className="flex justify-end">
               <Button variant="outline" asChild>
-                <a href="/wallet">Ir para a Carteira</a>
+                <a href="/wallet">Go to Wallet</a>
               </Button>
             </CardFooter>
           </Card>

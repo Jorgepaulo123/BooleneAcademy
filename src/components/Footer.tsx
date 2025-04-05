@@ -41,7 +41,7 @@ const Footer = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Links Rápidos</h3>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-gray-400 hover:text-primary">Cursos</Link>
@@ -70,7 +70,7 @@ const Footer = () => {
                 <a href="#" className="text-gray-400 hover:text-primary">Marketing</a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-primary">Negócios</a>
+                <a href="#" className="text-gray-400 hover:text-primary">Business</a>
               </li>
               <li>
                 <a href="#" className="text-gray-400 hover:text-primary">Fotografia</a>

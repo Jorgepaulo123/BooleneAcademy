@@ -109,9 +109,9 @@ const Index = () => {
           ) : courses.length === 0 ? (
             <div className="text-center py-20">
               <Award className="h-16 w-16 mx-auto text-muted" />
-              <h3 className="mt-4 text-xl font-bold">Nenhum curso disponível</h3>
+              <h3 className="mt-4 text-xl font-bold">No courses available</h3>
               <p className="mt-2 text-muted-foreground">
-                Os cursos estarão disponíveis em breve.
+                Courses will be available soon.
               </p>
             </div>
           ) : (
