@@ -171,7 +171,7 @@ const Wallet = () => {
               <WalletIcon className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Minha Carteira</h1>
+              <h1 className="text-2xl font-bold">My Wallet</h1>
               <p className="text-muted-foreground">
                 Gerencie seus fundos e transações
               </p>
@@ -222,7 +222,7 @@ const Wallet = () => {
                             name="amount"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Valor (R$)</FormLabel>
+                                <FormLabel>Valor (KW)</FormLabel>
                                 <FormControl>
                                   <Input
                                     placeholder="0.00"
