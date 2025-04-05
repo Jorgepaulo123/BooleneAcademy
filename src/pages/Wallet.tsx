@@ -244,11 +244,25 @@ const Wallet = () => {
                               <FormItem>
                                 <FormLabel>Phone Number</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    placeholder="(XX) XXXXX-XXXX"
-                                    {...field}
-                                    className="bg-muted"
-                                  />
+                                  <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                      <span className="text-gray-500">+265</span>
+                                    </div>
+                                    <Input
+                                      placeholder="XXXXXXXXX"
+                                      maxLength={9}
+                                      className="bg-muted pl-12"
+                                      value={field.value.startsWith("+265") ? field.value.substring(4) : field.value}
+                                      onChange={(e) => {
+                                        // Permitir apenas dígitos
+                                        const value = e.target.value.replace(/\D/g, "");
+                                        // Limitar a 9 dígitos
+                                        const trimmedValue = value.substring(0, 9);
+                                        // Armazenar com o prefixo
+                                        field.onChange("+265" + trimmedValue);
+                                      }}
+                                    />
+                                  </div>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>

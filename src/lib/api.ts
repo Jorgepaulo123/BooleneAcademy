@@ -496,6 +496,9 @@ export const getWalletTransactions = async () => {
 
 export const initializeDeposit = async (amount: number, mobile: string) => {
   try {
+    // Extrair apenas os últimos 9 dígitos do número de telefone
+    const mobileNumber = mobile.startsWith("+265") ? mobile.substring(4) : mobile;
+    
     const response = await fetch(`${API_URL}/wallet/deposit/initialize`, {
       method: "POST",
       headers: {
@@ -504,7 +507,7 @@ export const initializeDeposit = async (amount: number, mobile: string) => {
       },
       body: JSON.stringify({
         amount,
-        mobile,
+        mobile: mobileNumber,
       }),
     });
 
