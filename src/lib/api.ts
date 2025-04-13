@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+export const API_URL = import.meta.env.VITE_API_URL || 'https://boolen-849852190788.us-central1.run.app';
 
 type AuthTokens = {
   access_token: string;
