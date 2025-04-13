@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-const API_URL = "https://boolen-849852190788.us-central1.run.app";
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 type AuthTokens = {
   access_token: string;
@@ -245,7 +245,7 @@ export const updateProfilePicture = async (file: File) => {
     const formData = new FormData();
     formData.append("profile_picture", file);
 
-    const response = await fetch(`${API_URL}/profile/picture`, {
+    const response = await fetch(`${API_URL}/users/profile/picture`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: formData,
@@ -260,6 +260,10 @@ export const updateProfilePicture = async (file: File) => {
   } catch (error) {
     handleApiError(error);
   }
+};
+
+export const getProfilePictureUrl = (userId: number) => {
+  return `${API_URL}/users/profile/picture/${userId}`;
 };
 
 // Course API
@@ -592,4 +596,8 @@ export const deleteUser = async (userId: number) => {
   } catch (error) {
     handleApiError(error);
   }
+};
+
+export const getCourseCoverUrl = (courseId: number) => {
+  return `${API_URL}/courses/cover/${courseId}`;
 };

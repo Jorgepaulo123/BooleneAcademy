@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -7,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Download, Clock, Loader2 } from "lucide-react";
 import { Course } from "@/lib/types";
 import { useAuth } from "@/hooks/use-auth";
-import { purchaseCourse, downloadCourse, toggleCourseLike } from "@/lib/api";
+import { purchaseCourse, downloadCourse, toggleCourseLike, getCourseCoverUrl } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface CourseCardProps {
@@ -125,7 +124,7 @@ const CourseCard = ({ course, onUpdated }: CourseCardProps) => {
       <Link to={`/courses/${course.id}`} className="relative">
         <div className="relative overflow-hidden aspect-video bg-muted">
           <img
-            src={course.cover_image || "/placeholder.svg"}
+            src={getCourseCoverUrl(course.id)}
             alt={course.title}
             className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
           />

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Upload, Loader2 } from "lucide-react";
@@ -14,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
-import { updateProfilePicture } from "@/lib/api";
+import { updateProfilePicture, getProfilePictureUrl } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
@@ -68,6 +67,11 @@ const Profile = () => {
       setProfilePicture(null);
     } catch (error) {
       console.error("Failed to update profile picture:", error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update profile picture. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsUploading(false);
     }
@@ -97,120 +101,64 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] py-10">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center mb-8">
-          <div className="bg-primary/20 p-3 rounded-full mr-4">
-            <User className="h-8 w-8 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">My Profile</h1>
-            <p className="text-muted-foreground">
-              View and manage your personal information
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-1 animate-slide-up opacity-0">
-            <CardHeader className="text-center">
-              <CardTitle>Profile Picture</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center">
-              <Avatar className="h-32 w-32 border-4 border-border mb-4">
-                <AvatarImage
-                  src={user?.profile_picture}
-                  alt={user?.username || "Profile"}
-                />
-                <AvatarFallback className="text-4xl bg-primary text-white">
-                  {getInitials(user?.username)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-center">
-                <p className="font-medium text-lg">{user?.username}</p>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <Input
-                type="file"
-                accept="image/png,image/jpeg"
-                onChange={handleProfilePictureChange}
-                className="bg-muted"
-              />
-              {profilePicture && (
-                <p className="text-xs text-muted-foreground">
-                  Selected file: {profilePicture.name}
-                </p>
-              )}
-              <Button
-                className="w-full"
-                onClick={handleProfilePictureUpload}
-                disabled={!profilePicture || isUploading}
-              >
-                {isUploading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Update Picture
-                  </>
+    <div className="container mx-auto py-8">
+      <div className="max-w-2xl mx-auto space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>Manage your profile information</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-20 w-20">
+                {user?.id && (
+                  <AvatarImage
+                    src={getProfilePictureUrl(user.id)}
+                    alt={user.username}
+                  />
                 )}
-              </Button>
-            </CardFooter>
-          </Card>
-
-          <Card className="md:col-span-2 animate-slide-up opacity-0" style={{ animationDelay: "0.1s" }}>
-            <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-              <CardDescription>
-                Details of your platform account
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Username
-                </label>
-                <div className="p-2 bg-muted rounded-md font-medium">
-                  {user?.username}
-                </div>
+                <AvatarFallback>{getInitials(user?.username)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="text-lg font-medium">{user?.username}</h3>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                <p className="text-xs text-muted-foreground">
+                  Member since {formatDate(user?.created_at)}
+                </p>
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Email
-                </label>
-                <div className="p-2 bg-muted rounded-md font-medium">
-                  {user?.email}
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Account Type
-                </label>
-                <div className="p-2 bg-muted rounded-md font-medium">
-                  {user?.is_admin ? "Administrator" : "Regular User"}
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Registration Date
-                </label>
-                <div className="p-2 bg-muted rounded-md font-medium">
-                  {formatDate(user?.created_at)}
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button variant="outline" asChild>
-                <a href="/wallet">Go to Wallet</a>
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <Input
+              type="file"
+              accept="image/png,image/jpeg"
+              onChange={handleProfilePictureChange}
+              className="bg-muted"
+            />
+            {profilePicture && (
+              <p className="text-xs text-muted-foreground">
+                Selected file: {profilePicture.name}
+              </p>
+            )}
+            <Button
+              className="w-full"
+              onClick={handleProfilePictureUpload}
+              disabled={!profilePicture || isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Update Picture
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );
